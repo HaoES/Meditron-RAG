@@ -1,0 +1,11 @@
+torch
+sentence_transformers
+transformers 
+langchain
+streamlit
+streamlit-extras
+PyPDF
+qdrant-client
+ctransformers
+python-multipart
+aiofiles
