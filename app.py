@@ -7,7 +7,7 @@ from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from langchain.llms import HuggingFaceHub
 from langchain import PromptTemplate
-import os
+from htmlTemplates import css, bot_template, user_template
 
 template = """ 
 You are a tutor helping me study for my medical exam using the provided context. 
@@ -40,9 +40,21 @@ def get_chunks(text):
 
 
 def process_query(query):
+    # fix this later
     question = str(prompt.format(query=query))
     response = st.session_state.conversation({"question": question})
-    st.write(response)
+    st.session_state.chat_history = response["chat_history"]
+
+    for i, message in enumerate(st.session_state.chat_history):
+        if i % 2 == 0:
+            st.write(
+                user_template.replace("{{MSG}}", message.content[84:]),
+                unsafe_allow_html=True,
+            )
+        else:
+            st.write(
+                bot_template.replace("{{MSG}}", message.content), unsafe_allow_html=True
+            )
 
 
 def get_conv(vects):
@@ -60,10 +72,13 @@ def get_conv(vects):
 def main():
     st.set_page_config(page_title="Med Prep", page_icon=":medical_symbol:")
     st.header("Med Prep :medical_symbol:")
+    st.write(css, unsafe_allow_html=True)
 
     # create session state object
     if "conversation" not in st.session_state:
         st.session_state.conversation = None
+    if "chat_history" not in st.session_state:
+        st.session_state.chat_history = None
 
     # receiving user's query
     query = st.text_input("Ask questions about your document:")
