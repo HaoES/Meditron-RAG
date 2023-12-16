@@ -6,9 +6,15 @@ from langchain.vectorstores import FAISS
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from langchain.llms import HuggingFaceHub
-from langchain.chains.question_answering import load_qa_chain
-
+from langchain import PromptTemplate
 import os
+
+template = """ 
+You are a tutor helping me study for my medical exam using the provided context. 
+{query}
+"""
+
+prompt = PromptTemplate.from_template(template)
 
 
 def get_vectors(chunks):
@@ -17,12 +23,11 @@ def get_vectors(chunks):
     return vectorstore
 
 
-def get_pdf_text(docs):
+def get_pdf_text(doc):
     text = ""
-    for doc in docs:
-        pdf_reader = PdfReader(doc)
-        for page in pdf_reader.pages:
-            text += page.extract_text()
+    pdf_reader = PdfReader(doc)
+    for page in pdf_reader.pages:
+        text += page.extract_text()
     return text
 
 
@@ -35,7 +40,8 @@ def get_chunks(text):
 
 
 def process_query(query):
-    response = st.session_state.conversation({"question": query})
+    question = str(prompt.format(query=query))
+    response = st.session_state.conversation({"question": question})
     st.write(response)
 
 
@@ -60,27 +66,27 @@ def main():
         st.session_state.conversation = None
 
     # receiving user's query
-    query = st.text_input("Ask questions about your documents:")
+    query = st.text_input("Ask questions about your document:")
     if query:
         process_query(query)
 
     with st.sidebar:
-        st.subheader("Your documents")
-        docs = st.file_uploader(
-            "Upload your course materials here then click 'Process':",
-            accept_multiple_files=True,
+        st.subheader("Your document")
+        doc = st.file_uploader(
+            "Upload your course material here then click 'Process':",
             type="pdf",
         )
         if st.button("Process"):
-            with st.spinner("Processing files ..."):
+            with st.spinner("Processing file ..."):
                 # get pdf files:
-                raw_text = get_pdf_text(docs)
+                raw_text = get_pdf_text(doc)
                 # get chunks of texts
                 chunks = get_chunks(raw_text)
                 # get vectorstore
                 vects = get_vectors(chunks)
                 # get conversation
                 st.session_state.conversation = get_conv(vects)
+                st.write("File Processed!, You can start learning!")
 
 
 if __name__ == "__main__":
