@@ -5,7 +5,7 @@ langchain
 streamlit
 streamlit-extras
 PyPDF
-qdrant-client
 ctransformers
 python-multipart
 aiofiles
+faiss-cpu
