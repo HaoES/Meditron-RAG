@@ -34,21 +34,16 @@ def get_chunks(text):
     return chunks
 
 
-def process_query(query):
-    response = st.session_state.conversation({"question": query})
-    st.write(response)
-
-
-def get_conv(vects):
+def handle_query(query):
+    vects = st.session_state.vects
+    docs = vects.similarity_search(query=query, k=3)
     llm = HuggingFaceHub(
         repo_id="mistralai/Mixtral-8x7B-Instruct-v0.1",
         model_kwargs={"tempearture": 0.0, "max_length": 2048},
     )
-    memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
-    conversation_chain = ConversationalRetrievalChain.from_llm(
-        llm=llm, retriever=vects.as_retriever(), memory=memory
-    )
-    return conversation_chain
+    chain = load_qa_chain(llm=llm, chain_type="stuff")
+    response = chain.run(input_documents=docs, question=query)
+    st.write(response)
 
 
 def main():
@@ -56,13 +51,13 @@ def main():
     st.header("Med Prep :medical_symbol:")
 
     # create session state object
-    if "conversation" not in st.session_state:
-        st.session_state.conversation = None
+    if "vects" not in st.session_state:
+        st.session_state.vects = None
 
     # receiving user's query
     query = st.text_input("Ask questions about your documents:")
     if query:
-        process_query(query)
+        handle_query(query)
 
     with st.sidebar:
         st.subheader("Your documents")
@@ -79,8 +74,7 @@ def main():
                 chunks = get_chunks(raw_text)
                 # get vectorstore
                 vects = get_vectors(chunks)
-                # get conversation
-                st.session_state.conversation = get_conv(vects)
+                st.session_state.vects = vects
 
 
 if __name__ == "__main__":
