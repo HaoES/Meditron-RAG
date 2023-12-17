@@ -70,8 +70,8 @@ def get_conv(vects):
 
 
 def main():
-    st.set_page_config(page_title="Med Prep", page_icon=":medical_symbol:")
-    st.header("Med Prep :medical_symbol:")
+    st.set_page_config(page_title="Medical Tutor", page_icon=":medical_symbol:")
+    st.header("Medical Tutor :medical_symbol:")
     st.write(css, unsafe_allow_html=True)
 
     # create session state object
@@ -81,14 +81,17 @@ def main():
         st.session_state.chat_history = None
 
     # receiving user's query
-    query = st.text_input("Ask questions about your document:")
+    query = st.text_input(
+        """3 - Ask the tutor to help you learn from your document:
+    \nExample: Give me question that could figure on my final exam."""
+    )
     if query:
         process_query(query)
 
     with st.sidebar:
-        st.subheader("Your document")
+        st.subheader("1 - Upload your document")
         doc = st.file_uploader(
-            "Upload your course material here then click 'Process':",
+            "2 - Hit 'Process':",
             type="pdf",
         )
         if st.button("Process"):
