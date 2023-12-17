@@ -83,15 +83,25 @@ def main():
     # receiving user's query
     query = st.text_input(
         """3 - Ask the tutor to help you learn from your document:
-    \nExample: Give me question that could figure on my final exam."""
+    \nExample: "Give me a question that could figure on my final exam." """
     )
     if query:
         process_query(query)
 
     with st.sidebar:
-        st.subheader("1 - Upload your document")
+        st.markdown(
+            """
+        # Medical tutor helps you study for your medical exams using your own course material:
+        """
+        )
+        st.subheader("1 - Upload your document and hit 'Process'")
+        st.markdown(
+            """
+        Example:[ACC's Breast Cancer Document](https://www.cancer.org/content/dam/CRC/PDF/Public/8577.00.pdf)
+        """
+        )
         doc = st.file_uploader(
-            "2 - Hit 'Process':",
+            "Your Document here",
             type="pdf",
         )
         if st.button("Process"):
@@ -104,7 +114,7 @@ def main():
                 vects = get_vectors(chunks)
                 # get conversation
                 st.session_state.conversation = get_conv(vects)
-                st.write("File Processed!, You can start learning!")
+                st.write("2 - File Processed!, You can start learning!")
 
 
 if __name__ == "__main__":

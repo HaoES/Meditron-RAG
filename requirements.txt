@@ -6,6 +6,5 @@ streamlit
 streamlit-extras
 PyPDF
 ctransformers
-python-multipart
 aiofiles
 faiss-cpu
