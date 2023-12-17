@@ -97,7 +97,7 @@ def main():
         st.subheader("1 - Upload your document and hit 'Process'")
         st.markdown(
             """
-        Example:[ACC's Breast Cancer Document](https://www.cancer.org/content/dam/CRC/PDF/Public/8577.00.pdf)
+        Example:[ACS's Lung Cancer Document](https://www.cancer.org/content/dam/CRC/PDF/Public/8703.00.pdf)
         """
         )
         doc = st.file_uploader(
